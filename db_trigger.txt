@@ -1,0 +1,120 @@
+
+create table product_price_insert
+(p_id number(5),
+names varchar(20),
+supplier varchar(20),
+unit_price number(7,2));
+
+create table product_price_old_after
+(p_id number(5),
+names varchar(20),
+supplier varchar(20),
+unit_price number(7,2));
+
+create table product
+(p_id number(5),
+names varchar(20),
+supplier varchar(20),
+unit_price number(7,2));
+
+create table delete_product
+(p_id number(5),
+names varchar(20),
+supplier varchar(20),
+unit_price number(7,2));
+
+CREATE or REPLACE TRIGGER price_history_trigger
+BEFORE UPDATE OF unit_price ON product
+FOR EACH ROW
+BEGIN
+INSERT INTO product_price_history values (:old.p_id,
+:old.names,
+:old.supplier,
+:old.unit_price);
+END;
+/
+insert into product values(100,'laptop','dell',262.22);
+insert into product values(101,'laptop','HP',362.22);
+
+update product set unit_price = 2000 where p_id=101; 
+select * from product;
+select * from product_price_history;
+
+CREATE or REPLACE TRIGGER price_history_after
+AFTER UPDATE OF unit_price ON product
+FOR EACH ROW
+BEGIN
+INSERT INTO product_price_old_after values (:old.p_id,
+:old.names,
+:old.supplier,
+:old.unit_price);
+END;                                                                
+/
+CREATE or REPLACE TRIGGER trigger_DELETE
+BEFORE DELETE ON product
+FOR EACH ROW
+BEGIN
+INSERT INTO delete_product values (:old.p_id,
+:old.names,
+:old.supplier,
+:old.unit_price);
+END;
+/
+SELECT *FROM product_price_old_after;
+select *from product;
+SELECT *FROM delete_product;
+delete from delete_product;
+delete from product where unit_price=262.22;
+
+
+
+CREATE OR REPLACE TRIGGER AFTER_INSERT_TRIGGER
+AFTER INSERT ON PRODUCT
+FOR EACH ROW
+BEGIN 
+INSERT INTO product_price_insert values (:new.p_id,
+:new.names,
+:new.supplier
+,:new.unit_price);
+END;
+
+insert into product values (102,'t.v','panasonic',123);
+
+select *from product_price_insert;
+drop trigger [nameoftrigger];
+
+create table product_check (message varchar(20),Current_Date Date);
+CREATE OR REPLACE TRIGGER stat_level_trigger
+BEFORE UPDATE ON product
+BEGIN
+INSERT INTO product_check Values ('before',sysdate);
+END;
+/
+CREATE OR REPLACE TRIGGER row_level_trigger
+BEFORE UPDATE ON product
+BEGIN
+INSERT INTO product_check Values ('before-r',sysdate);
+END;
+/
+
+SELECT *FROM PRODUCT;
+SELECT * FROM product_check;
+
+update product set unit_price =5000 where p_id=101;
+
+
+CREATE OR REPLACE TRIGGER STAT_AFTER_level_trigger
+AFTER UPDATE ON product
+BEGIN
+INSERT INTO product_check Values ('AFTER-S',sysdate);
+END;
+/
+CREATE OR REPLACE TRIGGER row_AFTER_level_trigger
+AFTER UPDATE ON product
+BEGIN
+INSERT INTO product_check Values ('AFTER-row',sysdate);
+END;
+/
+select *from product_check;
+update product set unit_price=4500 where p_id=102;
+

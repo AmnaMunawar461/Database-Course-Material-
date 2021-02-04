@@ -1,0 +1,183 @@
+
+create table t1(tname varchar(20),price number(4,2));
+insert into t1 values('doll',9.99);
+
+commit;
+select *from t1;
+rollback;
+select *from t1;
+insert into t1 values('blue doll',9.99);
+insert into t1 values('turtle',6.3);
+update t1 set tname='g_turtle' where tname='green turtle';
+commit;
+SET SERVEROUTPUT ON;
+declare
+    pragma autonomous_transaction;
+begin
+    insert into t1 values ('green turtle',13.67);
+    commit;
+end;
+/
+select *from t1;
+rollback;
+select * from emp where empno=7782;
+SET SERVEROUTPUT ON;
+DECLARE
+   pragma autonomous_transaction;
+
+begin   
+   update emp set sal=4567 where empno=7782;
+   commit;
+end;
+/
+ select *from emp;  
+rollback;
+select *from t1;
+
+-----------------------------------------------------
+set transaction isolation level read committed;
+insert into t1 values('yoyo',20);
+rollback;
+--------------------------------------------------------------------------
+set transaction isolation level read committed;
+select *from t1;
+set serveroutput on;
+begin
+  insert into t1 values('frock',34);
+  commit;
+end;
+/
+select *from t1;
+rollback;
+
+insert into t1 values ('bottle',7);
+
+set serveroutput on ;
+declare
+    pragma autonomous_transaction;
+begin 
+    insert into t1 values ('row',5);
+    commit;
+end;
+/
+
+select *from t1;
+rollback;
+-----------------------------------------------------------------------------
+set transaction isolation level serializable;
+ select *from t1;
+ insert into t1 values('pen','5');
+set serveroutput on;
+declare
+  pragma autonomous_transaction;
+begin
+  insert into t1 values('pencil',3);
+  commit;
+end;
+/
+  select *from t1;
+  commit;
+  
+  ------------------
+  insert into t1 values('perfume',2);
+  select *from t1;
+  commit;
+  set serveroutput on ;
+  declare
+     pragma autonomous_transaction;
+  begin
+     update t1 set tname = 'f' where tname='perfume';
+      commit;
+  end;
+  /
+  --bank example withdraw
+  select *from t1;
+  ----------------------------------------------------------------------------
+  set transaction isolation level SERIALIZABLE;
+  delete t1 where tname='f';
+  select *from t1;
+  commit;
+  set serveroutput on ;
+  declare
+     pragma autonomous_transaction;
+  begin
+     insert into t1 values('f',2);
+     update t1  set price=3.14 where tname='f';
+      commit;
+  end;
+  /
+  -------------------------------------------------------
+rollback;
+set transaction isolation level SERIALIZABLE;
+  select *from t1;
+  update t1 set price=3.78;
+set serveroutput on ;
+  declare
+     pragma autonomous_transaction;
+  begin
+     update t1 set price=5*10 where tname='pencil';
+     commit;
+  end;
+  /
+  select *from t1;
+  
+  rollback;
+  update t1 set price=4 where tname='pencil';
+  
+commit;  ---------------------------------------------
+set serveroutput on ;
+  declare
+     pragma autonomous_transaction;
+  begin
+     update t1 set price=5*10 where tname='pencil';
+     commit;
+  end;
+  /
+  update t1 set price=6*10 where tname='pencil';
+  select *from t1;
+  rollback;
+  --------------------------------------------------------
+set transaction isolation level SERIALIZABLE;
+set serveroutput on ;
+  declare
+     pragma autonomous_transaction;
+  begin
+     update t1 set price=5*10 where tname='pencil';
+     commit;
+  end;
+  /
+  select *from t1;
+  commit;
+  update t1 set price=6*10 where tname='pencil';
+  select *from t1;
+  rollback;
+  -----------------------
+  commit;
+ commit; 
+set transaction read only;
+--update t1 set price=3; error ;just read only allowed
+set serveroutput on ;
+declare
+  pragma autonomous_transaction;
+begin
+  insert into t1 values('bear',8);
+commit;
+end;
+/
+select *from t1;
+commit;
+-------------------------------------------------------
+  set transaction read write;
+update t1 set price=3;
+select *from t1;--just read only allowed
+set serveroutput on ;
+declare
+  pragma autonomous_transaction;
+begin
+  insert into t1 values('br',5);
+commit;
+end;
+/
+select *from t1;
+commit;
+

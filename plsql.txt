@@ -1,0 +1,109 @@
+create table plsql (name varchar(24),sem int,marks int);
+set serveroutput on;
+declare
+a plsql.name%type;
+b plsql.sem%type;
+c plsql.marks%type;
+begin
+for i in 1..5 LOOP
+insert into plsql values('&a',&b,&c);
+end loop;
+END;
+/
+select *from plsql;
+
+
+
+delete from plsql;
+insert into plsql 
+values ('bisma',4,98);
+set serveroutput on ;
+declare
+chose plsql.name%type;
+e int;
+begin
+e:=4;
+select name into chose from plsql where e=sem;
+if chose='amna' THEN
+dbms_output.put_line('name of student is ' || chose);
+ELSIF chose='king' THEN
+dbms_output.put_line('name of student is '||chose);
+else
+dbms_output.put_line('name is '|| chose);
+end if;
+end;
+/
+
+
+set serveroutput on ;
+DECLARE
+a int;
+begin 
+a:=&a;
+while (a!=0) loop
+a:=a/10;
+if ((a MOD 2)=0) then
+ dbms_output.put_line('even ');
+end if;
+end loop;
+end;
+/
+
+
+SET SERVEROUTPUT ON;
+DECLARE
+CURSOR A IS SELECT * FROM plsql;
+BEGIN
+FOR I IN A 
+LOOP
+DBMS_OUTPUT.PUT_LINE(I.name||' '||I.SEM||' '||I.MARKS);
+END LOOP;
+end;
+/
+
+SET SERVEROUTPUT ON;
+DECLARE
+name varchar(24);
+CURSOR a IS SELECT name FROM plsql WHERE name='bisma';
+begin
+open a;
+
+fetch a into name;
+dbms_output.put_line(name);
+close a;
+end;
+/
+
+
+CREATE OR REPLACE PROCEDURE AMNAss (A int,B int)
+AS 
+sums int:=0;
+
+BEGIN 
+sums:=A*B;
+DBMS_OUTPUT.PUT_LINE(sums);
+end;
+/
+execute AMNAss(2,13);
+
+
+CREATE OR REPLACE FUNCTION AKIL(A VARCHAR,B VARCHAR)
+RETURN VARCHAR AS
+C varchar(10):='';
+BEGIN
+RETURN A ;
+END;
+/
+
+
+set serveroutput on;
+declare
+c varchar(10);
+begin
+dbms_output.put_line(AKIL('a','m'));
+end;
+/
+
+
+
+
